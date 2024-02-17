@@ -1,5 +1,5 @@
 interface School {
-    key: React.Key;
+    key: number;
     id: number;
     name: string;
     foundingDate: string;

@@ -7,28 +7,33 @@ import SchoolService from '@/utils/services/schoolService';
 
 const columns: TableColumnsType<School> = [
     {
+        key: 'id',
         title: 'ID',
         dataIndex: 'id',
         sorter: (a, b) => a.id - b.id,
         sortDirections: ['descend'],
     },
     {
+        key: 'name',
         title: 'Name',
         dataIndex: 'name',
     },
     {
+        key: 'foundingDate',
         title: 'Founding Date',
         dataIndex: 'foundingDate',
         sorter: (a, b) => Date.parse(a.foundingDate) - Date.parse(b.foundingDate),
         sortDirections: ['descend'],
     },
     {
+        key: 'createdDate',
         title: 'Created Date',
         dataIndex: 'createdDate',
         sorter: (a, b) => Date.parse(a.createdDate) - Date.parse(b.createdDate),
         sortDirections: ['descend'],
     },
     {
+        key: 'lastUpdated',
         title: 'Last Updated',
         dataIndex: 'lastUpdated',
         sorter: (a, b) => Date.parse(a.lastUpdated) - Date.parse(b.lastUpdated),
@@ -57,8 +62,7 @@ const TableBody: React.FC = () => {
         const fetchSchools = async () => {
             try {
                 const schools = await SchoolService.getAllService();
-                console.log(schools);
-                
+
                 setSchools(schools);
             } catch (error) {
                 console.error('Error fetching schools:', error);
@@ -70,7 +74,7 @@ const TableBody: React.FC = () => {
 
     return (
         <Suspense fallback={<Loading />}>
-            <Table columns={columns} dataSource={schools} onChange={onChange} />
+            <Table columns={columns} dataSource={schools} onChange={onChange}/>
         </Suspense>
     )
 
