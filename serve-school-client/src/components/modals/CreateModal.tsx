@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Button, Checkbox, DatePicker, Form, Input, Modal } from 'antd';
+import { Button, Checkbox, DatePicker, Form, Input, Modal, message } from 'antd';
 
 const CreateModal: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,17 +17,49 @@ const CreateModal: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
+  const onFinish = async () => {
+    try {
+      const response = await fetch('http://localhost:5261/api/Schools/CreateSchools', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(schoolData),
+      });
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        message.success(response.text(), 3);
+      } else {
+        message.error(response.text(), 3);
+      }
+    } catch (error) {
+      console.error('Error creating school:', error);
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
 
-  type FieldType = {
-    schoolName?: string;
+  type CreateSchoolDTO = {
+    name?: string;
     foundingDate?: string;
+  };
+
+  const [schoolData, setSchoolData] = useState<CreateSchoolDTO>({ 
+    name: '', 
+    foundingDate: '' 
+  });
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    
+    setSchoolData((prevData) => ({
+      ...prevData,
+      [name]: name === 'foundingDate' ? new Date(value).toISOString() : value,
+    }));
+    
   };
 
   return (
@@ -47,12 +79,12 @@ const CreateModal: React.FC = () => {
           autoComplete="off"
         >
 
-          <Form.Item<FieldType> label="School Name" name="schoolName" rules={[{ required: true, message: 'Please input school name!' }]}>
-            <Input />
+          <Form.Item<CreateSchoolDTO> label="School Name" name="name" rules={[{ required: true, message: 'Please input school name!' }]}>
+            <Input name='name' type='text' onChange={handleChange} />
           </Form.Item>
 
-          <Form.Item<FieldType> label="Founding Date" name="foundingDate" rules={[{ required: true, message: 'Please input founding date!' }]}>
-            <Input name='foundingDate' type='date'/>
+          <Form.Item<CreateSchoolDTO> label="Founding Date" name="foundingDate" rules={[{ required: true, message: 'Please input founding date!' }]}>
+            <Input name='foundingDate' type='date' onChange={handleChange} />
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

@@ -45,22 +45,13 @@ const columns: TableColumnsType<School> = [
     },
 ];
 
-const data = async () => {
-    try {
-        const schools = await SchoolService.getAllService();
-        return schools;
-    } catch (error) {
-        console.error('Error fetching schools:', error);
-    }
-};
-
 const TableBody: React.FC = () => {
     const [schools, setSchools] = useState<School[]>([]);
 
     useEffect(() => {
         const fetchSchools = async () => {
             try {
-                const schools = await SchoolService.getAllService();
+                const schools = await SchoolService.getAllSchools();
                 setSchools(schools);
             } catch (error) {
                 console.error('Error fetching schools:', error);

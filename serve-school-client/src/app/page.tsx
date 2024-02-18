@@ -3,8 +3,6 @@ import SideBar from "@/components/navbars/SideBar";
 import React, { Suspense, lazy } from "react";
 import Loading from "./loading";
 import MainFooter from "../components/footers/MainFooter";
-import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import CreateModal from "@/components/modals/CreateModal";
 
 const TableBody = React.lazy(() => import('@/components/tables/TableBody'));

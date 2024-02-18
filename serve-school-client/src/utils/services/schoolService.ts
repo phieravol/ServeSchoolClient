@@ -1,9 +1,9 @@
 interface SchoolService {
-    getAllService: () => Promise<Array<School>>;
+    getAllSchools: () => Promise<Array<School>>;
 }
 
 const SchoolService: SchoolService = {
-    getAllService: async (): Promise<Array<School>> => {
+    getAllSchools: async (): Promise<Array<School>> => {
         try {
             const url = "http://localhost:5261/api/Schools/GetAllSchools";
             const response = await fetch(url);
@@ -17,7 +17,7 @@ const SchoolService: SchoolService = {
             console.error('Error fetching schools:', error);
             return [];
         }
-    },
+    }
 };
 
 export default SchoolService;
