@@ -4,6 +4,7 @@ import { Table } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import Loading from '@/app/loading';
 import SchoolService from '@/utils/services/schoolService';
+import formatDate from '@/helpers/dateHelper';
 
 const columns: TableColumnsType<School> = [
     {
@@ -22,6 +23,7 @@ const columns: TableColumnsType<School> = [
         key: 'foundingDate',
         title: 'Founding Date',
         dataIndex: 'foundingDate',
+        render: (foundingDate) => (foundingDate ? formatDate(foundingDate) : "N/A"),
         sorter: (a, b) => Date.parse(a.foundingDate) - Date.parse(b.foundingDate),
         sortDirections: ['descend'],
     },
@@ -29,6 +31,7 @@ const columns: TableColumnsType<School> = [
         key: 'createdDate',
         title: 'Created Date',
         dataIndex: 'createdDate',
+        render: (createdDate) => (createdDate ? formatDate(createdDate) : "N/A"),
         sorter: (a, b) => Date.parse(a.createdDate) - Date.parse(b.createdDate),
         sortDirections: ['descend'],
     },
@@ -36,6 +39,7 @@ const columns: TableColumnsType<School> = [
         key: 'lastUpdated',
         title: 'Last Updated',
         dataIndex: 'lastUpdated',
+        render: (lastUpdated) => (lastUpdated ? formatDate(lastUpdated) : "N/A"),
         sorter: (a, b) => Date.parse(a.lastUpdated) - Date.parse(b.lastUpdated),
         sortDirections: ['descend'],
     },
@@ -50,11 +54,6 @@ const data = async () => {
     }
 };
 
-
-const onChange: TableProps<School>['onChange'] = (pagination, filters, sorter, extra) => {
-    console.log('params', pagination, filters, sorter, extra);
-};
-
 const TableBody: React.FC = () => {
     const [schools, setSchools] = useState<School[]>([]);
 
@@ -62,7 +61,6 @@ const TableBody: React.FC = () => {
         const fetchSchools = async () => {
             try {
                 const schools = await SchoolService.getAllService();
-
                 setSchools(schools);
             } catch (error) {
                 console.error('Error fetching schools:', error);
@@ -74,11 +72,12 @@ const TableBody: React.FC = () => {
 
     return (
         <Suspense fallback={<Loading />}>
-            <Table columns={columns} dataSource={schools} onChange={onChange}/>
+            <Table columns={columns} 
+            dataSource={schools} 
+            pagination={{pageSizeOptions: ['5', '10', '20'], showSizeChanger: true, defaultPageSize: 5, defaultCurrent: 1}} 
+            rowKey="id"/>
         </Suspense>
     )
-
-
 }
 
 export default TableBody;
