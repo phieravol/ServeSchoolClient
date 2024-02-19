@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Form, Input, Modal, message } from "antd";
+import { Button, Form, FormInstance, Input, Modal, message } from "antd";
 import { format } from "date-fns";
 import { toSimplifyDate } from "@/helpers/dateHelper";
 import { log } from "console";
@@ -27,10 +27,11 @@ const SchoolModal: React.FC<ModalProps> = ({
   school,
 }) => {
   const [schoolData, setSchoolData] = useState<CreateSchoolDTO>({
+    id: 0,
     name: "",
     foundingDate: "",
   });
-  const formRef = React.createRef();
+  const [form] = Form.useForm();
 
   const onFinish = async () => {
     try {
@@ -59,11 +60,10 @@ const SchoolModal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     setSchoolData({
+      id: school?.id ?? 0,
       name: school?.name,
       foundingDate: school?.foundingDate,
     });
-
-    console.log(`school new: ${JSON.stringify(schoolData.name)}`);
   }, [school]);
 
   const onFinishFailed = (errorInfo: any) => {
@@ -77,11 +77,11 @@ const SchoolModal: React.FC<ModalProps> = ({
       ...prevData,
       [name]: name === "foundingDate" ? new Date(value).toISOString() : value,
     }));
-    console.log(schoolData);
   };
 
   const handleClose = () => {
     onCancel?.();
+    form.resetFields();
   };
 
   return (
@@ -91,7 +91,7 @@ const SchoolModal: React.FC<ModalProps> = ({
         size="large"
         onClick={onShow}
       >
-        <h2 className="align-middle">Create School</h2>
+        <h2 className="align-middle">Create School {schoolData.id}</h2>
       </Button>
       <Modal
         title={`Create School`}
@@ -110,7 +110,24 @@ const SchoolModal: React.FC<ModalProps> = ({
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
+          form={form}
         >
+          <Form.Item
+            label="Id"
+            name="id"
+            rules={[{ required: true, message: "Please input school name!" }]}
+            valuePropName="id"
+            // hidden
+          >
+            <Input
+              name="id"
+              type="hiden"
+              onChange={handleChange}
+              value={schoolData.id}
+              hidden
+            />
+          </Form.Item>
+
           <Form.Item
             label="School Name"
             name="name"
@@ -131,12 +148,7 @@ const SchoolModal: React.FC<ModalProps> = ({
             rules={[{ required: true, message: "Please input founding date!" }]}
             valuePropName={schoolData.foundingDate}
           >
-            <Input
-              name="foundingDate"
-              type="date"
-              onChange={handleChange}
-              value={toSimplifyDate(schoolData.foundingDate)}
-            />
+            <Input name="foundingDate" type="date" onChange={handleChange} />
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

@@ -47,8 +47,6 @@ const SchoolTable: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  console.log(`school selected: ${JSON.stringify(schoolData)}`);
-
   const handleShow = () => {
     setIsModalVisible(true);
   };

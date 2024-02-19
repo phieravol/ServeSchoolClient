@@ -8,8 +8,8 @@ const formatDate = (rawDate: string) => {
   return formattedDate;
 };
 
-const toSimplifyDate = (rawDate?: string) => {
-  const formattedDate = rawDate?.toString().split("T")[0];
+const toSimplifyDate = (rawDate: string) => {
+  const formattedDate = rawDate.toString().split("T")[0];
   return formattedDate;
 };
 
