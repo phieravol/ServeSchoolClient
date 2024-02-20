@@ -1,6 +1,6 @@
 import Loading from "@/app/loading";
-import { formatDate } from "@/helpers/dateHelper";
 import { Button, Table, TableColumnsType } from "antd";
+import moment from "moment";
 import { Suspense } from "react";
 
 interface Props {
@@ -28,7 +28,7 @@ const TableServe: React.FC<Props> = ({ schools, onEdit, onDelete }) => {
       title: "Founding Date",
       dataIndex: "foundingDate",
       render: (foundingDate) =>
-        foundingDate ? formatDate(foundingDate) : "N/A",
+        foundingDate ? moment(foundingDate).format("DD/MM/YYYY") : "N/A",
       sorter: (a, b) => Date.parse(a.foundingDate) - Date.parse(b.foundingDate),
       sortDirections: ["descend"],
     },
@@ -45,26 +45,13 @@ const TableServe: React.FC<Props> = ({ schools, onEdit, onDelete }) => {
   ];
   return (
     <Suspense fallback={<Loading />}>
-      {/* <SchoolModal
-        onSave={handleSave}
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        onShow={handleShow}
-        school={schoolData}
-      /> */}
-
       <Table
         columns={columns}
         dataSource={schools}
-        // onRow={(record) => ({
-        //   onClick: () => handleRowClick(record),
-        //   style: { cursor: "pointer" },
-        //   title: "Click row to view detail",
-        // })}
         pagination={{
           pageSizeOptions: ["5", "10", "20"],
           showSizeChanger: true,
-          defaultPageSize: 5,
+          defaultPageSize: 10,
           defaultCurrent: 1,
         }}
         rowKey="id"

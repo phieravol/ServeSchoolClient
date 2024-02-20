@@ -4,8 +4,6 @@ import React, { Suspense, lazy, useState } from "react";
 import Loading from "./loading";
 import MainFooter from "@/components/footers/MainFooter";
 
-const SchoolTable = React.lazy(() => import("@/components/tables/SchoolTable"));
-
 export default function Home() {
   return (
     <div id="container">
@@ -19,11 +17,8 @@ export default function Home() {
         </nav>
         <div id="main-content" className="w-full">
           <h1 className="text-[x-large] text-center font-medium p-4">
-            School Table Listing.
+            This Is Home page
           </h1>
-          <Suspense fallback={<Loading />}>
-            <SchoolTable />
-          </Suspense>
         </div>
       </main>
 

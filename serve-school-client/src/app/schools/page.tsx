@@ -1,13 +1,12 @@
 "use client";
 import MainMenu from "@/components/headers/MainMenu";
 import SideBar from "@/components/navbars/SideBar";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import TableServe from "@/components/tables/TableServe";
 import MainFooter from "@/components/footers/MainFooter";
 import SchoolService from "@/utils/services/schoolService";
 import ModalServe from "@/components/modals/ModalServe";
-import { Button, FormInstance, message } from "antd";
-import { formatDate, toSimplifyDate } from "@/helpers/dateHelper";
+import { Button, Modal, message } from "antd";
 import moment from "moment";
 
 export default function SchoolPage() {
@@ -17,23 +16,20 @@ export default function SchoolPage() {
 
   useEffect(() => {
     const fetchSchools = async () => {
-      try {
-        const schools = await SchoolService.getAllSchools();
-        schools.map((item, index) => {
-          item.order = index + 1;
-          item.foundingDate = toSimplifyDate(item.foundingDate);
-        });
-        schools;
-        setSchools(schools);
-      } catch (error) {
-        console.error("Error fetching schools:", error);
-      }
+      const schools = await SchoolService.getAllSchools();
+      schools.map((item, index) => {
+        item.order = index + 1;
+        item.foundingDate = moment(item.foundingDate).format("yyyy-MM-DD");
+      });
+      schools;
+      setSchools(schools);
     };
 
     fetchSchools();
   }, []);
 
   const handleEdit = (school: School) => {
+    school.foundingDate = moment(school.foundingDate).format("yyyy-MM-DD");
     setSelectedSchool(school);
     setIsModalVisible(true);
   };
@@ -43,53 +39,51 @@ export default function SchoolPage() {
     setIsModalVisible(true);
   };
 
-  const handleDelete = (school: School) => {
-    // Perform delete operation, then update schools state
-    setSchools((prevSchools) => prevSchools.filter((s) => s.id !== school.id));
+  const handleDelete = async (school: School) => {
+    const config = {
+      title: "Confirm Delete",
+      content: `Are you sure you want to delete "${school.name}"?`,
+      onOk: async () => {
+        var response = await SchoolService.deleteSchool(school);
+        if (response) {
+          message.success(response, 3);
+          // Perform delete operation, then update schools state
+          setSchools((prevSchools) =>
+            prevSchools.filter((s) => s.id !== school.id)
+          );
+        } else {
+          message.error("Failed to delete school", 3);
+        }
+      },
+    };
+
+    Modal.confirm(config);
   };
 
   const handleSave = async (school: School) => {
     if (selectedSchool) {
-      // Update existing school
-      setSchools((prevSchools) =>
-        prevSchools.map((s) =>
-          s.id === selectedSchool.id ? { ...s, ...school } : s
-        )
-      );
-    } else {
-      try {
-        school.foundingDate = moment(
-          school.foundingDate,
-          "DD-MM-YYYY"
-        ).toISOString();
-
-        const response = await fetch(
-          "http://localhost:5261/api/Schools/CreateSchools",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(school),
-          }
+      const response = await SchoolService.updateSchool(school);
+      if (response) {
+        message.success(response, 3);
+        // Update existing school
+        setSchools((prevSchools) =>
+          prevSchools.map((s) =>
+            s.id === selectedSchool.id ? { ...s, ...school } : s
+          )
         );
-
-        if (response.ok) {
-          var data = await response.json();
-          console.log(data);
-
-          message.success(`Create school successfully!`, 3);
-        } else {
-          message.error(response.text(), 3);
-        }
-      } catch (error) {
-        message.error("Error creating school:", 3);
       }
+    } else {
       // Add new school
-      setSchools((prevSchools) => [
-        ...prevSchools,
-        { ...school, order: prevSchools.length + 1 },
-      ]);
+      const response = await SchoolService.createSchool(school);
+      if (response) {
+        school.foundingDate = moment(school.foundingDate).format("MM/DD/YYYY");
+        message.success("create school successfully!");
+        // Add new school
+        setSchools((prevSchools) => [
+          ...prevSchools,
+          { ...school, order: prevSchools.length + 1, id: response.id },
+        ]);
+      }
     }
     setIsModalVisible(false);
   };

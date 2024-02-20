@@ -1,5 +1,5 @@
 // Modal.tsx
-import { Modal, Form, Input, Button, FormInstance } from "antd";
+import { Modal, Form, Input, Button, FormInstance, message } from "antd";
 import React, { useRef, useState } from "react";
 
 interface Props {
@@ -32,15 +32,14 @@ const ModalServe: React.FC<Props> = ({ visible, school, onCancel, onSave }) => {
       .validateFields()
       .then((values) => {
         onSave({ ...school, ...values });
-        form.resetFields();
+        form.setFieldsValue({
+          name: "",
+          foundingDate: "",
+        });
       })
       .catch((errorInfo) => {
-        console.log("Validation failed:", errorInfo);
+        message.error("Failed when submit form!", 3);
       });
-    form.setFieldsValue({
-      name: "",
-      foundingDate: "",
-    });
   };
 
   return (
@@ -57,17 +56,17 @@ const ModalServe: React.FC<Props> = ({ visible, school, onCancel, onSave }) => {
           form={form}
           layout="vertical"
           initialValues={school}
-          id="modalForm"
+          onFinish={handleOk}
         >
           <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-            <Input />
+            <Input name="name" />
           </Form.Item>
           <Form.Item
             label="Founding Date"
             name="foundingDate"
             rules={[{ required: true }]}
           >
-            <Input type="date" />
+            <Input type="date" name="foundingDate" />
           </Form.Item>
         </Form>
       </Modal>
