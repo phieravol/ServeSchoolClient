@@ -1,11 +1,8 @@
 import MainMenu from "@/components/headers/MainMenu";
 import SideBar from "@/components/navbars/SideBar";
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import Loading from "./loading";
-import MainFooter from "../components/footers/MainFooter";
-import CreateModal from "@/components/modals/CreateModal";
-
-const TableBody = React.lazy(() => import('@/components/tables/TableBody'));
+import MainFooter from "@/components/footers/MainFooter";
 
 export default function Home() {
   return (
@@ -19,11 +16,9 @@ export default function Home() {
           <SideBar />
         </nav>
         <div id="main-content" className="w-full">
-          <CreateModal />
-          <h1 className="text-[x-large] text-center font-medium p-4">School Table Listing.</h1>
-          <Suspense fallback={<Loading />}>
-            <TableBody />
-          </Suspense>
+          <h1 className="text-[x-large] text-center font-medium p-4">
+            This Is Home page
+          </h1>
         </div>
       </main>
 
@@ -31,6 +26,5 @@ export default function Home() {
         <MainFooter />
       </footer>
     </div>
-
   );
 }
